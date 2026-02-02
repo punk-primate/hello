@@ -14,32 +14,39 @@
             height: 100vh;
             margin: 0;
             font-family: 'Arial', sans-serif;
-            background-color: #ffeef8;
+            /* Changed to a nice deep purple gradient */
+            background: linear-gradient(135deg, #4b0082, #8a2be2);
             overflow: hidden;
+            color: white;
         }
 
         h1 {
-            color: #d63384;
-            font-size: 3rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            font-size: 3.5rem;
             text-align: center;
             padding: 20px;
         }
 
         .container {
             position: relative;
-            text-align: center;
+            height: 100px; /* Gives the buttons some breathing room */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #yesBtn {
-            font-size: 2rem;
-            padding: 15px 40px;
+            font-size: 2.5rem;
+            padding: 20px 50px;
             background-color: #ff4d6d;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             cursor: pointer;
-            margin-right: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: transform 0.2s;
+            z-index: 10;
         }
 
         #yesBtn:hover {
@@ -49,23 +56,27 @@
         #noBtn {
             font-size: 1rem;
             padding: 10px 20px;
-            background-color: #888;
+            background-color: #555;
             color: white;
             border: none;
             border-radius: 10px;
             position: absolute;
             cursor: pointer;
+            transition: all 0.15s ease; /* Smooth movement */
         }
 
         #successMessage {
             display: none;
             text-align: center;
-            margin-top: 20px;
         }
 
-        img {
-            width: 250px;
-            border-radius: 15px;
+        /* Larger GIF styling */
+        .cat-gif {
+            width: 500px; 
+            max-width: 90vw;
+            border: 5px solid white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -73,15 +84,15 @@
 
     <div id="mainContent">
         <h1>Sarah Sarwar, <br> Will you be my valentine on 14th February?</h1>
-        <div class="container">
+        <div class="container" id="buttonArea">
             <button id="yesBtn">YES!</button>
             <button id="noBtn">No</button>
         </div>
     </div>
 
     <div id="successMessage">
-        <h1 style="color: #ff4d6d;">Yay! See you on the 14th! ❤️</h1>
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mXmC2fK9XBBm0/giphy.gif" alt="Dancing Cat">
+        <h1>Yay! See you on the 14th! ❤️</h1>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mXmC2fK9XBBm0/giphy.gif" class="cat-gif" alt="Dancing Cat">
     </div>
 
     <script>
@@ -90,7 +101,7 @@
         const mainContent = document.getElementById('mainContent');
         const successMessage = document.getElementById('successMessage');
 
-        // Logic to make the "No" button run away
+        // Adjusted logic: Moves a short distance away instead of a random teleport
         document.addEventListener('mousemove', (e) => {
             const mouseX = e.clientX;
             const mouseY = e.clientY;
@@ -100,27 +111,51 @@
 
             const distance = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
 
-            // If the mouse gets closer than 100 pixels, move the button
-            if (distance < 100) {
-                const newX = Math.random() * (window.innerWidth - btnRect.width);
-                const newY = Math.random() * (window.innerHeight - btnRect.height);
-                
+            // If mouse is within 80px, push the button away slightly
+            if (distance < 80) {
+                const angle = Math.atan2(btnCenterY - mouseY, btnCenterX - mouseX);
+                const moveDist = 40; // How far it "jumps" each time
+
+                let newX = noBtn.offsetLeft + Math.cos(angle) * moveDist;
+                let newY = noBtn.offsetTop + Math.sin(angle) * moveDist;
+
+                // Keep it within screen bounds
+                newX = Math.max(20, Math.min(newX, window.innerWidth - 100));
+                newY = Math.max(20, Math.min(newY, window.innerHeight - 50));
+
                 noBtn.style.left = `${newX}px`;
                 noBtn.style.top = `${newY}px`;
             }
         });
 
-        // Yes Button click event
         yesBtn.addEventListener('click', () => {
             mainContent.style.display = 'none';
             successMessage.style.display = 'block';
             
-            // Confetti blast!
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            // Big confetti blast
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff4d6d', '#ffffff', '#8a2be2']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff4d6d', '#ffffff', '#8a2be2']
+                });
+
+                if (Date.now() < animationEnd) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         });
     </script>
 </body>
