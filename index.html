@@ -14,73 +14,93 @@
             height: 100vh;
             margin: 0;
             font-family: 'Arial', sans-serif;
-            background-color: #ffeef8;
+            background: linear-gradient(135deg, #2d004d, #6a0dad);
             overflow: hidden;
+            color: white;
         }
 
         h1 {
-            color: #d63384;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
             font-size: 3rem;
             text-align: center;
             padding: 20px;
+            z-index: 1;
         }
 
         .container {
             position: relative;
-            text-align: center;
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #yesBtn {
-            font-size: 2rem;
-            padding: 15px 40px;
+            font-size: 2.5rem;
+            padding: 20px 50px;
             background-color: #ff4d6d;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             cursor: pointer;
-            margin-right: 20px;
-            transition: transform 0.2s;
-        }
-
-        #yesBtn:hover {
-            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 10;
         }
 
         #noBtn {
             font-size: 1rem;
             padding: 10px 20px;
-            background-color: #888;
-            color: white;
+            background-color: #444;
+            color: #bbb;
             border: none;
             border-radius: 10px;
             position: absolute;
             cursor: pointer;
+            transition: all 0.1s ease-out; /* Magnet-like smoothness */
+            z-index: 5;
         }
 
         #successMessage {
             display: none;
             text-align: center;
-            margin-top: 20px;
         }
 
-        img {
-            width: 250px;
-            border-radius: 15px;
+        .cat-gif {
+            width: 550px; 
+            max-width: 90vw;
+            border: 8px solid white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
+
+        /* Thinking Emoji Animation */
+        .thinking-emoji {
+            position: absolute;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
     <div id="mainContent">
-        <h1>Sarah Sarwar, <br> Will you be my valentine on 14/02/2026?</h1>
+        <h1>Sarah Sarwar, <br> Will you be my valentine on 14th February?</h1>
         <div class="container">
             <button id="yesBtn">YES!</button>
-            <button id="noBtn">No</button>
+            <button id="noBtn" style="left: 60%; top: 40%;">No</button>
         </div>
     </div>
 
     <div id="successMessage">
-        <h1 style="color: #ff4d6d;">Yaaaaaaaaaay!!!!! ❤️</h1>
+        <h1>Yay! See you on the 14th! ❤️</h1>
         <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTFnYmx4NzkweTQwYTUybWE2cms2MGg3ZzV1OWpkdHNudWc2dDk3NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YdymLnBeyr70rfKqAj/giphy.gif">
     </div>
 
@@ -90,7 +110,7 @@
         const mainContent = document.getElementById('mainContent');
         const successMessage = document.getElementById('successMessage');
 
-        // Logic to make the "No" button run away
+        // Opposing Magnet Logic
         document.addEventListener('mousemove', (e) => {
             const mouseX = e.clientX;
             const mouseY = e.clientY;
@@ -98,16 +118,37 @@
             const btnCenterX = btnRect.left + btnRect.width / 2;
             const btnCenterY = btnRect.top + btnRect.height / 2;
 
-            const distance = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
+            const dx = btnCenterX - mouseX;
+            const dy = btnCenterY - mouseY;
+            const distance = Math.hypot(dx, dy);
 
-            // If the mouse gets closer than 100 pixels, move the button
-            if (distance < 100) {
-                const newX = Math.random() * (window.innerWidth - btnRect.width);
-                const newY = Math.random() * (window.innerHeight - btnRect.height);
-                
+            // Distance check (120px influence zone)
+            if (distance < 120) {
+                const force = (120 - distance) / 10; // Stronger force as you get closer
+                let newX = noBtn.offsetLeft + (dx / distance) * force * 15;
+                let newY = noBtn.offsetTop + (dy / distance) * force * 15;
+
+                // Keep within screen bounds
+                const padding = 50;
+                newX = Math.max(padding, Math.min(newX, window.innerWidth - padding - btnRect.width));
+                newY = Math.max(padding, Math.min(newY, window.innerHeight - padding - btnRect.height));
+
                 noBtn.style.left = `${newX}px`;
                 noBtn.style.top = `${newY}px`;
             }
+        });
+
+        // Floating Thinking Emoji Logic
+        noBtn.addEventListener('click', (e) => {
+            const emoji = document.createElement('div');
+            emoji.innerText = '🤔';
+            emoji.className = 'thinking-emoji';
+            emoji.style.left = `${e.clientX}px`;
+            emoji.style.top = `${e.clientY}px`;
+            document.body.appendChild(emoji);
+
+            // Remove emoji after animation finishes
+            setTimeout(() => emoji.remove(), 2000);
         });
 
         // Yes Button click event
@@ -115,12 +156,25 @@
             mainContent.style.display = 'none';
             successMessage.style.display = 'block';
             
-            // Confetti blast!
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            // Celebration Confetti
+            const end = Date.now() + (5 * 1000);
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ffffff', '#ff4d6d']
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ffffff', '#ff4d6d']
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
         });
     </script>
 </body>
