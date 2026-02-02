@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Sarah Sarwar</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #ffeef8;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 3rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+        }
+
+        #yesBtn {
+            font-size: 2rem;
+            padding: 15px 40px;
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-right: 20px;
+            transition: transform 0.2s;
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.1);
+        }
+
+        #noBtn {
+            font-size: 1rem;
+            padding: 10px 20px;
+            background-color: #888;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        #successMessage {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        img {
+            width: 250px;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mainContent">
+        <h1>Sarah Sarwar, <br> Will you be my valentine on 14th February?</h1>
+        <div class="container">
+            <button id="yesBtn">YES!</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div id="successMessage">
+        <h1 style="color: #ff4d6d;">Yay! See you on the 14th! ❤️</h1>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueGZueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/mXmC2fK9XBBm0/giphy.gif" alt="Dancing Cat">
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const mainContent = document.getElementById('mainContent');
+        const successMessage = document.getElementById('successMessage');
+
+        // Logic to make the "No" button run away
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            const btnRect = noBtn.getBoundingClientRect();
+            const btnCenterX = btnRect.left + btnRect.width / 2;
+            const btnCenterY = btnRect.top + btnRect.height / 2;
+
+            const distance = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
+
+            // If the mouse gets closer than 100 pixels, move the button
+            if (distance < 100) {
+                const newX = Math.random() * (window.innerWidth - btnRect.width);
+                const newY = Math.random() * (window.innerHeight - btnRect.height);
+                
+                noBtn.style.left = `${newX}px`;
+                noBtn.style.top = `${newY}px`;
+            }
+        });
+
+        // Yes Button click event
+        yesBtn.addEventListener('click', () => {
+            mainContent.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            // Confetti blast!
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        });
+    </script>
+</body>
+</html>
