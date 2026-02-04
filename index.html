@@ -3,179 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Sarah Sarwar</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <title>Sarah: Road to Being Jacked</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #240046; /* Deep Purple */
+            --accent: #e0aaff;   /* Light Purple */
+            --highlight: #7b2cbf; /* Medium Purple */
+            --text: #ffffff;
+            --road: #10002b;
+            --grass: #3c096c;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
         body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            font-family: 'Press Start 2P', cursive;
+            color: var(--text);
+            overflow: hidden; /* Prevent scrollbars */
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #2d004d, #6a0dad);
-            overflow: hidden;
-            color: white;
         }
 
+        /* --- UI ELEMENTS --- */
         h1 {
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-            font-size: 3rem;
+            font-size: 1.5rem;
+            text-shadow: 4px 4px 0px #000;
             text-align: center;
-            padding: 20px;
-            z-index: 1;
+            line-height: 1.5;
+            margin-top: 20px;
+            color: #ff9e00; /* Retro Orange Title */
         }
 
         .container {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        button {
+            background: var(--highlight);
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            border: 4px solid white;
+            padding: 15px;
+            margin: 10px;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px #000;
+            transition: transform 0.1s;
+            width: 80%;
+            max-width: 300px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        /* --- ANIMATED ROAD SCENE --- */
+        .scene-container {
             width: 100%;
             height: 200px;
+            background: var(--grass);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid white;
+            margin-bottom: 20px;
+        }
+
+        .road {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100%;
+            background: var(--road);
+            perspective: 100px;
+        }
+
+        /* Moving road lines */
+        .road::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 10px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0%,
+                transparent 50%,
+                #ffffff 50%,
+                #ffffff 100%
+            );
+            background-size: 20px 60px;
+            animation: moveRoad 0.5s linear infinite;
+            transform: translateX(-50%);
+        }
+
+        @keyframes moveRoad {
+            from { background-position: 0 0; }
+            to { background-position: 0 60px; }
+        }
+
+        /* --- 8-BIT CAR (CSS PIXEL ART) --- */
+        .car-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 0.4s infinite alternate;
+        }
+
+        .pixel-car {
+            width: 10px;
+            height: 10px;
+            background: transparent;
+            /* Box shadow pixel art: x y color */
+            box-shadow: 
+                -20px 10px 0 #D00000, 
+                -10px 10px 0 #D00000, 
+                0px 10px 0 #D00000, 
+                10px 10px 0 #D00000, 
+                20px 10px 0 #D00000,
+                
+                -20px 0px 0 #FF0000,
+                -10px 0px 0 #FF0000, 
+                0px 0px 0 #FF0000, 
+                10px 0px 0 #FF0000, 
+                20px 0px 0 #FF0000,
+
+                -10px -10px 0 #FF9999, /* Windshield */
+                0px -10px 0 #FF9999, 
+                10px -10px 0 #FF9999,
+
+                -20px 20px 0 #000, /* Wheels */
+                20px 20px 0 #000;
+        }
+
+        @keyframes bounce {
+            from { transform: translateX(-50%) translateY(0); }
+            to { transform: translateX(-50%) translateY(-2px); }
+        }
+
+        /* --- WORKOUT PAGE STYLES --- */
+        .workout-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px dashed var(--accent);
+            padding: 20px;
+            width: 90%;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+            line-height: 1.8;
+            font-size: 0.8rem;
+        }
+
+        li { margin-bottom: 10px; }
+
+        .important {
+            color: #ffff00;
+            text-transform: uppercase;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        /* --- 8-BIT PERSON ANIMATION --- */
+        .person-anim {
+            width: 80px;
+            height: 80px;
+            margin: 10px auto;
+            position: relative;
+        }
+        
+        .pixel-person {
+            width: 5px;
+            height: 5px;
+            position: absolute;
+            top: 20px; left: 40px;
+            background: #00ff00;
+            box-shadow: 
+                0 5px 0 #00ff00, 
+                0 10px 0 #00ff00, /* Body */
+                -5px 5px 0 #00ff00, 5px 5px 0 #00ff00, /* Arms down */
+                -5px 15px 0 #00ff00, 5px 15px 0 #00ff00; /* Legs down */
+            animation: jumpJack 0.6s steps(2) infinite;
+        }
+
+        @keyframes jumpJack {
+            0% {
+                box-shadow: 
+                0 5px 0 #00ff00, 
+                0 10px 0 #00ff00,
+                -5px 5px 0 #00ff00, 5px 5px 0 #00ff00,
+                -5px 15px 0 #00ff00, 5px 15px 0 #00ff00;
+            }
+            50% {
+                box-shadow: 
+                0 5px 0 #00ff00, 
+                0 10px 0 #00ff00,
+                -10px -5px 0 #00ff00, 10px -5px 0 #00ff00, /* Arms up */
+                -10px 20px 0 #00ff00, 10px 20px 0 #00ff00; /* Legs wide */
+            }
+        }
+
+        /* --- START OVERLAY --- */
+        #start-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-
-        #yesBtn {
-            font-size: 2.5rem;
-            padding: 20px 50px;
-            background-color: #ff4d6d;
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 10;
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        #noBtn {
-            font-size: 1rem;
-            padding: 10px 20px;
-            background-color: #444;
-            color: #bbb;
-            border: none;
-            border-radius: 10px;
-            position: absolute;
-            cursor: pointer;
-            transition: all 0.1s ease-out; /* Magnet-like smoothness */
-            z-index: 5;
-        }
-
-        #successMessage {
-            display: none;
-            text-align: center;
-        }
-
-        .cat-gif {
-            width: 550px; 
-            max-width: 90vw;
-            border: 8px solid white;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-        }
-
-        /* Thinking Emoji Animation */
-        .thinking-emoji {
-            position: absolute;
-            font-size: 2rem;
-            pointer-events: none;
-            animation: floatUp 2s ease-out forwards;
-            z-index: 100;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="mainContent">
-        <h1>Sarah Sarwar, <br> Will you be my valentine on 14th February?</h1>
-        <div class="container">
-            <button id="yesBtn">YES!</button>
-            <button id="noBtn" style="left: 60%; top: 40%;">No</button>
+    <div id="start-overlay">
+        <h1 style="color: #e0aaff;">READY PLAYER SARAH?</h1>
+        <button onclick="startGame()">INSERT COIN (START)</button>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <h1>SARAH:<br>ROAD TO BEING JACKED</h1>
+        
+        <div class="scene-container">
+            <div class="road"></div>
+            <div class="car-container">
+                <div class="pixel-car"></div>
+            </div>
+        </div>
+
+        <div id="menu-screen" class="screen active">
+            <button onclick="showWorkout(1)">Day 1: Legs (Start)</button>
+            <button onclick="showWorkout(2)">Day 2: Push (Upper)</button>
+            <button onclick="showWorkout(3)">Day 3: Core & Cardio</button>
+            <button onclick="showWorkout(4)">Day 4: Pull (Back)</button>
+            <button onclick="showWorkout(5)">Day 5: Full Body</button>
+        </div>
+
+        <div id="workout-screen" class="screen">
+            <h2 id="day-title" style="font-size: 1rem; color: var(--accent); margin-bottom: 10px;"></h2>
+            
+            <div class="person-anim">
+                <div class="pixel-person"></div>
+            </div>
+
+            <div class="workout-box">
+                <ul id="workout-list">
+                    </ul>
+                <div style="margin-top: 20px; border-top: 2px solid white; padding-top: 10px;">
+                    <span class="important">FINISHER:</span><br>
+                    Incline Walk<br>
+                    (12 Incline, 3 Speed, 20 Mins)
+                </div>
+            </div>
+            
+            <button onclick="goHome()" style="background: #d00000;">Back to Map</button>
         </div>
     </div>
 
-    <div id="successMessage">
-        <h1>Yay! See you on the 14th! ❤️</h1>
-        <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTFnYmx4NzkweTQwYTUybWE2cms2MGg3ZzV1OWpkdHNudWc2dDk3NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YdymLnBeyr70rfKqAj/giphy.gif">
-    </div>
-
     <script>
-        const noBtn = document.getElementById('noBtn');
-        const yesBtn = document.getElementById('yesBtn');
-        const mainContent = document.getElementById('mainContent');
-        const successMessage = document.getElementById('successMessage');
-
-        // Opposing Magnet Logic
-        document.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-            const btnRect = noBtn.getBoundingClientRect();
-            const btnCenterX = btnRect.left + btnRect.width / 2;
-            const btnCenterY = btnRect.top + btnRect.height / 2;
-
-            const dx = btnCenterX - mouseX;
-            const dy = btnCenterY - mouseY;
-            const distance = Math.hypot(dx, dy);
-
-            // Distance check (120px influence zone)
-            if (distance < 120) {
-                const force = (120 - distance) / 10; // Stronger force as you get closer
-                let newX = noBtn.offsetLeft + (dx / distance) * force * 15;
-                let newY = noBtn.offsetTop + (dy / distance) * force * 15;
-
-                // Keep within screen bounds
-                const padding = 50;
-                newX = Math.max(padding, Math.min(newX, window.innerWidth - padding - btnRect.width));
-                newY = Math.max(padding, Math.min(newY, window.innerHeight - padding - btnRect.height));
-
-                noBtn.style.left = `${newX}px`;
-                noBtn.style.top = `${newY}px`;
+        // Workout Data
+        const workouts = {
+            1: {
+                title: "Day 1: Leg Destruction",
+                exercises: [
+                    "Goblet Squats: 3 x 12",
+                    "Walking Lunges: 3 x 10 (each leg)",
+                    "Calf Raises: 3 x 15",
+                    "Glute Bridges: 3 x 12"
+                ]
+            },
+            2: {
+                title: "Day 2: Push Power",
+                exercises: [
+                    "Push-Ups (Knees or Toes): 3 x Failure",
+                    "Overhead Press (Dumbbells): 3 x 10",
+                    "Lateral Raises: 3 x 12",
+                    "Tricep Dips (Chair/Bench): 3 x 10"
+                ]
+            },
+            3: {
+                title: "Day 3: Active Rest",
+                exercises: [
+                    "Plank: 3 x 45 Seconds",
+                    "Russian Twists: 3 x 20",
+                    "Leg Raises: 3 x 12",
+                    "Light Stretching / Yoga"
+                ]
+            },
+            4: {
+                title: "Day 4: Pull Strength",
+                exercises: [
+                    "Dumbbell Rows: 3 x 12 (each arm)",
+                    "Superman Holds: 3 x 15 seconds",
+                    "Bicep Curls: 3 x 12",
+                    "Door Frame Face Pulls: 3 x 15"
+                ]
+            },
+            5: {
+                title: "Day 5: Full Body Sweat",
+                exercises: [
+                    "Jumping Jacks: 3 x 50",
+                    "Bodyweight Squats: 3 x 20",
+                    "Mountain Climbers: 3 x 30 sec",
+                    "Push-ups: 3 x 10"
+                ]
             }
-        });
+        };
 
-        // Floating Thinking Emoji Logic
-        noBtn.addEventListener('click', (e) => {
-            const emoji = document.createElement('div');
-            emoji.innerText = '🤔';
-            emoji.className = 'thinking-emoji';
-            emoji.style.left = `${e.clientX}px`;
-            emoji.style.top = `${e.clientY}px`;
-            document.body.appendChild(emoji);
+        const music = document.getElementById('bg-music');
+        music.volume = 0.3; // Set volume to 30%
 
-            // Remove emoji after animation finishes
-            setTimeout(() => emoji.remove(), 2000);
-        });
+        function startGame() {
+            document.getElementById('start-overlay').style.display = 'none';
+            // Try to play music
+            music.play().catch(e => console.log("Audio play failed usually due to browser settings"));
+        }
 
-        // Yes Button click event
-        yesBtn.addEventListener('click', () => {
-            mainContent.style.display = 'none';
-            successMessage.style.display = 'block';
+        function showWorkout(day) {
+            // Hide Menu, Show Workout
+            document.getElementById('menu-screen').classList.remove('active');
+            document.getElementById('workout-screen').classList.add('active');
+
+            // Populate Data
+            const data = workouts[day];
+            document.getElementById('day-title').innerText = data.title;
             
-            // Celebration Confetti
-            const end = Date.now() + (5 * 1000);
-            (function frame() {
-                confetti({
-                    particleCount: 3,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#ffffff', '#ff4d6d']
-                });
-                confetti({
-                    particleCount: 3,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#ffffff', '#ff4d6d']
-                });
-                if (Date.now() < end) requestAnimationFrame(frame);
-            }());
-        });
+            const list = document.getElementById('workout-list');
+            list.innerHTML = ""; // Clear previous
+            
+            data.exercises.forEach(ex => {
+                let li = document.createElement('li');
+                li.innerText = ex;
+                list.appendChild(li);
+            });
+        }
+
+        function goHome() {
+            document.getElementById('workout-screen').classList.remove('active');
+            document.getElementById('menu-screen').classList.add('active');
+        }
     </script>
 </body>
 </html>
